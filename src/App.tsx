@@ -1,8 +1,9 @@
+
 import { useEffect, useState } from 'react';
 import {
   ArrowRight, ArrowUpRight, Menu, X, Mail, Phone, MapPin,
   ShieldCheck, LockKeyhole, Sparkles, Heart, Plus, Trash2,
-  Upload, Gamepad2, Music, Trophy, Tv
+  Upload, Gamepad2, Music, Trophy
 } from 'lucide-react';
 import { supabase, supabaseReady, adminEmail, type Apartment } from './supabase';
 
@@ -21,7 +22,17 @@ const defaults: Apartment[] = [
   photos:[
    {src:'/resources/block-1-bedroom.jpg',label:'Bedroom',alt:'Grandeur bedroom'},
    {src:'/resources/block-1-living-room.jpg',label:'Living Room',alt:'Grandeur living room'},
-   {src:'/resources/block-1-sitting-room.jpg',label:'Sitting Area',alt:'Grandeur sitting area'}
+   {src:'/resources/block-1-sitting-room.jpg',label:'Sitting Area',alt:'Grandeur sitting area'},
+   {src:'/resources/IMG-20261028-WA0032(1).jpg',label:'Grandeur Bathroom',alt:'Grandeur bathroom and shower'},
+   {src:'/resources/IMG-20261028-WA0036(2).jpg',label:'Grandeur Lounge',alt:'Grandeur lounge seating area'},
+   {src:'/resources/IMG-20261028-WA0037(2).jpg',label:'Grandeur Living Room',alt:'Grandeur main living room'},
+   {src:'/resources/IMG-20261028-WA0038.jpg',label:'Grandeur Living Room View',alt:'Grandeur living room from another angle'},
+   {src:'/resources/IMG-20261028-WA0042(2).jpg',label:'Grandeur Kitchen',alt:'Grandeur fitted kitchen'},
+   {src:'/resources/IMG-20261028-WA0045(1).jpg',label:'Grandeur Bedroom Lounge',alt:'Grandeur bedroom and lounge'},
+   {src:'/resources/IMG-20261028-WA0049(1).jpg',label:'Grandeur Bedroom',alt:'Grandeur bedroom'},
+   {src:'/resources/IMG-20261028-WA0053.jpg',label:'Grandeur Bedroom with TV',alt:'Grandeur bedroom with television'},
+   {src:'/resources/IMG-20261028-WA0057(2).jpg',label:'Grandeur Bedroom View',alt:'Grandeur bedroom from another angle'},
+   {src:'/resources/IMG-20261028-WA0058(1).jpg',label:'Grandeur Outdoor Area',alt:'Grandeur outdoor relaxation area'}
   ]
  },
  {
@@ -41,10 +52,17 @@ const defaults: Apartment[] = [
  {
   id:'studio',
   title:'Studio Apartment',
-  detail:'Comfortable and stylish studio apartment. Price on request.',
+  detail:'A stylish, fully furnished studio apartment featuring a comfortable sleeping area, fitted kitchen, entertainment space and modern bathroom.',
   nightly:0,
   sort_order:3,
-  photos:[]
+  photos:[
+   {src:'/resources/IMG-20261027-WA0557(1).jpg',label:'Studio Apartment',alt:'Studio apartment with sleeping area and fitted kitchen'},
+   {src:'/resources/IMG-20261027-WA0558(1).jpg',label:'Studio Kitchen',alt:'Studio fitted kitchen'},
+   {src:'/resources/IMG-20261027-WA0559(1).jpg',label:'Studio Bedroom & Entertainment',alt:'Studio bedroom and television area'},
+   {src:'/resources/IMG-20261027-WA0560(1).jpg',label:'Studio Shower',alt:'Studio bathroom shower and sink'},
+   {src:'/resources/IMG-20261027-WA0561(1).jpg',label:'Studio Bathroom',alt:'Studio bathroom interior'},
+   {src:'/resources/IMG-20261027-WA0562(1).jpg',label:'Studio Toilet & Shower',alt:'Studio toilet and shower area'}
+  ]
  }
 ];
 
@@ -57,7 +75,7 @@ const entertainment = [
  'PS4',
  'PS3',
  'AO',
- 'Ayo Olopon',
+ 'Ayo Lo Pon',
  'Karaoke',
  'Snooker Board',
  'Table Tennis Board'
@@ -99,7 +117,10 @@ function App(){
    const loaded=rows.map((a:any)=>({
     ...a,
     title:a.id==='block-1'?'Grandeur':a.id==='block-2'?'Prestige':a.title,
-    photos:(photos||[]).filter((p:any)=>p.apartment_id===a.id)
+    photos:[
+     ...(defaults.find(d=>d.id===a.id)?.photos||[]),
+     ...(photos||[]).filter((p:any)=>p.apartment_id===a.id)
+    ].filter((p:any,i:number,arr:any[])=>arr.findIndex((x:any)=>x.src===p.src)===i)
    }));
 
    if(!loaded.some((a:any)=>a.id==='studio')){
@@ -280,7 +301,7 @@ function App(){
      <p>Discover comfort, privacy and thoughtful hospitality in our luxury serviced apartments.</p>
      <button className="gold" onClick={()=>go('apartments')}>Explore apartments <ArrowRight size={17}/></button>
     </div>
-    <div className="stamp">BOUJEE<br/><b>LIVING,</b><br/>MADE SIMPLE</div>
+    <div className="stamp">Boujee<br/><b>Living,</b><br/>Made simple</div>
    </section>
 
    <section className="intro">
@@ -299,7 +320,7 @@ function App(){
     </div>
 
     <div className="home-gallery-grid">
-     {allPhotos.slice(0,8).map((p,i)=>
+     {apartments.flatMap(a=>a.photos.slice(0,3)).slice(0,8).map((p,i)=>
       <figure className={i===0?'gallery-large':''} key={p.id||p.src+i}>
        <img src={p.src} alt={p.alt}/>
        <figcaption>{p.label}</figcaption>
@@ -365,7 +386,7 @@ function App(){
      <h2>Comfort in every <em>detail.</em></h2>
     </div>
     <div className="about-gallery-grid">
-     {allPhotos.slice(0,6).map((p,i)=>
+     {apartments.flatMap(a=>a.photos.slice(3,5)).slice(0,6).map((p,i)=>
       <figure key={p.id||p.src+i}>
        <img src={p.src} alt={p.alt}/>
        <figcaption>{p.label}</figcaption>
@@ -465,7 +486,7 @@ function App(){
      <h2>A little look at <em>your next stay.</em></h2>
     </div>
     <div className="contact-gallery-grid">
-     {allPhotos.slice(0,3).map((p,i)=>
+     {apartments.flatMap(a=>a.photos.slice(5,6)).slice(0,3).map((p,i)=>
       <figure key={p.id||p.src+i}>
        <img src={p.src} alt={p.alt}/>
       </figure>
@@ -580,3 +601,8 @@ function App(){
 }
 
 export default App;
+
+
+
+   
+     
