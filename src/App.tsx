@@ -1,645 +1,903 @@
 
 import { useEffect, useState } from 'react';
+import { api, auth } from '@appdeploy/client';
 import {
-  ArrowRight, ArrowUpRight, Menu, X, Mail, Phone, MapPin,
-  ShieldCheck, LockKeyhole, Sparkles, Heart, Plus, Trash2,
-  Upload, Gamepad2, Music, Trophy
+  ArrowRight, ArrowUpRight, Menu, X, MapPin, Mail, Phone,
+  ShieldCheck, LockKeyhole, Sparkles, Heart
 } from 'lucide-react';
-import { supabase, supabaseReady, adminEmail, type Apartment } from './supabase';
 
-const wa = 'https://wa.me/message/B5ZSNSGTP46UP1';
+const assets = {
+  logo: '/resources/boujeelux-logo-new.png',
+  bedroom: '/resources/bedroom.jpg',
+  living1: '/resources/living-room-1.jpg',
+  living2: '/resources/living-room-2.jpg',
+  sitting: '/resources/sitting-room.jpg',
+  corridor: '/resources/corridor.jpg',
+  block2Bathroom: '/resources/block-2-bathroom.jpg',
+  block2Outdoor: '/resources/block-2-outdoor.jpg',
+  block2Bedroom: '/resources/block-2-bedroom.jpg',
+  block2BedroomParlour: '/resources/block-2-bedroom-parlour.jpg',
+  block2Kitchen: '/resources/block-2-kitchen.jpg',
+  block2Parlour: '/resources/block-2-parlour.jpg',
+  homePatio: '/resources/home-patio.jpg',
+  homeGrandeur: '/resources/home-grandeur-lounge.jpg',
+  homePrestige: '/resources/home-prestige-lounge.jpg',
+  homeGarden: '/resources/home-garden-patio.jpg',
+  homeOutdoor: '/resources/home-outdoor-seating.jpg',
+  homePrivate: '/resources/home-private-lounge.jpg',
+};
+
+const whatsapp = 'https://wa.me/message/B5ZSNSGTP46UPI1';
 const mapUrl = 'https://maps.app.goo.gl/tFdX3pNfdJoAuCaa6?g_st=iw';
-const tiktok = 'https://www.tiktok.com/@boujeelux.service?_r=1&_t=ZS-9Avy5JcdRyB';
-const email = 'Boujeelux24@gmail.com';
 
-const defaults: Apartment[] = [
+const phoneNumber = '09119791995';
+const email = 'Boujeelux24@gmail.com';
+const bookingEmail = 'Boujeeluxserviceapartment@gmail.com';
+
+const tikTok = 'https://www.tiktok.com/@boujeelux.service?_r=1&_t=ZS-9Avy5JcdRyB';
+
+type ApartmentPhoto = {
+  src: string;
+  label: string;
+  alt: string;
+};
+
+type Apartment = {
+  id: string;
+  title: string;
+  detail: string;
+  nightly: number;
+  photos: ApartmentPhoto[];
+};
+
+const defaultApartments: Apartment[] = [
   {
     id: 'block-1',
-    title: 'Grandeur',
-    detail: 'Three-bedroom luxury apartment • bedroom • living room • sitting area • hallway',
+    title: 'Grandeur Apartment',
+    detail: 'Three-bedroom apartment • bedroom • living room • sitting area • hallway',
     nightly: 150000,
-    sort_order: 1,
     photos: [
-      { src: '/resources/block-1-bedroom.jpg', label: 'Bedroom', alt: 'Grandeur bedroom' },
-      { src: '/resources/block-1-living-room.jpg', label: 'Living Room', alt: 'Grandeur living room' },
-      { src: '/resources/block-1-sitting-room.jpg', label: 'Sitting Area', alt: 'Grandeur sitting area' },
-      { src: '/resources/IMG-20261028-WA0032(1).jpg', label: 'Grandeur Bathroom', alt: 'Grandeur bathroom and shower' },
-      { src: '/resources/IMG-20261028-WA0036(2).jpg', label: 'Grandeur Lounge', alt: 'Grandeur lounge seating area' },
-      { src: '/resources/IMG-20261028-WA0037(2).jpg', label: 'Grandeur Living Room', alt: 'Grandeur main living room' },
-      { src: '/resources/IMG-20261028-WA0038.jpg', label: 'Grandeur Living Room View', alt: 'Grandeur living room from another angle' },
-      { src: '/resources/IMG-20261028-WA0042(2).jpg', label: 'Grandeur Kitchen', alt: 'Grandeur fitted kitchen' },
-      { src: '/resources/IMG-20261028-WA0045(1).jpg', label: 'Grandeur Bedroom Lounge', alt: 'Grandeur bedroom and lounge' },
-      { src: '/resources/IMG-20261028-WA0049(1).jpg', label: 'Grandeur Bedroom', alt: 'Grandeur bedroom' },
-      { src: '/resources/IMG-20261028-WA0053.jpg', label: 'Grandeur Bedroom with TV', alt: 'Grandeur bedroom with television' },
-      { src: '/resources/IMG-20261028-WA0057(2).jpg', label: 'Grandeur Bedroom View', alt: 'Grandeur bedroom from another angle' },
-      { src: '/resources/IMG-20261028-WA0058(1).jpg', label: 'Grandeur Outdoor Area', alt: 'Grandeur outdoor relaxation area' }
-    ]
+      { src: assets.bedroom, label: 'Bedroom', alt: 'Block 1 bedroom' },
+      { src: assets.living1, label: 'Living Room', alt: 'Block 1 living room view 1' },
+      { src: assets.living2, label: 'Living Room — Second View', alt: 'Block 1 living room view 2' },
+      { src: assets.sitting, label: 'Sitting Area', alt: 'Block 1 sitting area' },
+      { src: assets.corridor, label: 'Hallway', alt: 'Block 1 hallway' },
+    ],
   },
   {
     id: 'block-2',
     title: 'Prestige',
-    detail: 'Three-bedroom luxury apartment • bedrooms • parlour • kitchen • bathroom • outdoor area',
+    detail: 'Three bedrooms • parlour • kitchen • bathroom • outdoor area',
     nightly: 230000,
-    sort_order: 2,
     photos: [
-      { src: '/resources/block-2-bedroom.jpg', label: 'Bedroom', alt: 'Prestige bedroom' },
-      { src: '/resources/block-2-bedroom-parlour.jpg', label: 'Bedroom & Parlour', alt: 'Prestige bedroom and parlour' },
-      { src: '/resources/block-2-parlour.jpg', label: 'Parlour', alt: 'Prestige parlour' },
-      { src: '/resources/block-2-bathroom.jpg', label: 'Bathroom', alt: 'Prestige bathroom' },
-      { src: '/resources/block-2-outdoor.jpg', label: 'Outdoor Area', alt: 'Prestige outdoor area' }
-    ]
+      { src: assets.block2Bedroom, label: 'Bedroom', alt: 'Block 2 bedroom' },
+      { src: assets.block2BedroomParlour, label: 'Bedroom & Parlour', alt: 'Block 2 bedroom and parlour' },
+      { src: assets.block2Parlour, label: 'Parlour', alt: 'Block 2 parlour' },
+      { src: assets.block2Kitchen, label: 'Kitchen', alt: 'Block 2 kitchen' },
+      { src: assets.block2Bathroom, label: 'Bathroom', alt: 'Block 2 bathroom' },
+      { src: assets.block2Outdoor, label: 'Outdoor Area', alt: 'Block 2 outdoor area' },
+    ],
   },
   {
     id: 'studio',
     title: 'Studio Apartment',
-    detail: 'A stylish, fully furnished studio apartment featuring a comfortable sleeping area, fitted kitchen, entertainment space and modern bathroom.',
+    detail: 'Open-plan bedroom and lounge • kitchenette • private bathroom',
     nightly: 0,
-    sort_order: 3,
     photos: [
-      { src: '/resources/IMG-20261027-WA0557(1).jpg', label: 'Studio Apartment', alt: 'Studio apartment with sleeping area and fitted kitchen' },
-      { src: '/resources/IMG-20261027-WA0558(1).jpg', label: 'Studio Kitchen', alt: 'Studio fitted kitchen' },
-      { src: '/resources/IMG-20261027-WA0559(1).jpg', label: 'Studio Bedroom & Entertainment', alt: 'Studio bedroom and television area' },
-      { src: '/resources/IMG-20261027-WA0560(1).jpg', label: 'Studio Shower', alt: 'Studio bathroom shower and sink' },
-      { src: '/resources/IMG-20261027-WA0561(1).jpg', label: 'Studio Bathroom', alt: 'Studio bathroom interior' },
-      { src: '/resources/IMG-20261027-WA0562(1).jpg', label: 'Studio Toilet & Shower', alt: 'Studio toilet and shower area' }
-    ]
-  }
+      { src: '/resources/studio-overview.jpg', label: 'Studio Overview', alt: 'Studio apartment overview' },
+      { src: '/resources/studio-bedroom.jpg', label: 'Bedroom', alt: 'Studio apartment bedroom' },
+      { src: '/resources/studio-lounge.jpg', label: 'Lounge & TV', alt: 'Studio apartment lounge and television' },
+      { src: '/resources/studio-kitchen.jpg', label: 'Kitchenette', alt: 'Studio apartment kitchenette' },
+      { src: '/resources/studio-bathroom.jpg', label: 'Bathroom', alt: 'Studio apartment bathroom' },
+      { src: '/resources/studio-toilet.jpg', label: 'Bathroom Facilities', alt: 'Studio apartment bathroom facilities' },
+    ],
+  },
 ];
+
+const money = (n: number) => '₦' + n.toLocaleString('en-NG');
+
+const mergeApartmentData = (rows: any): Apartment[] => {
+  if (!Array.isArray(rows)) return defaultApartments;
+
+  const merged = defaultApartments.map(base => {
+    const saved = rows.find((row: any) => row && row.id === base.id);
+    return saved
+      ? {
+          ...base,
+          ...saved,
+          photos: Array.isArray(saved.photos) && saved.photos.length
+            ? saved.photos
+            : base.photos,
+        }
+      : base;
+  });
+
+  const extras = rows.filter(
+    (row: any) => row && !defaultApartments.some(base => base.id === row.id)
+  );
+
+  return [...merged, ...extras];
+};
 
 type Page = 'home' | 'about' | 'apartments' | 'contact' | 'login';
 
-const money = (n: number) =>
-  n > 0 ? '₦' + Number(n).toLocaleString('en-NG') : 'Price on request';
-
-const entertainment = [
-  'PS5',
-  'PS4',
-  'PS3',
-  'AO',
-  'Ayo Lo Pon',
-  'Karaoke',
-  'Snooker Board',
-  'Table Tennis Board'
-];
-
 function App() {
-  const [page, setPage] = useState<Page>(() =>
-    (['home', 'about', 'apartments', 'contact', 'login'].includes(location.hash.slice(1))
-      ? location.hash.slice(1) as Page : 'home')
-  );
+  const [page, setPage] = useState<Page>(() => {
+    const route = window.location.hash.replace('#', '') as Page;
+    return ['home', 'about', 'apartments', 'contact', 'login'].includes(route)
+      ? route
+      : 'home';
+  });
 
-  const [menu, setMenu] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState('');
-  const [apartments, setApartments] = useState<Apartment[]>(defaults);
-  const [guest, setGuest] = useState('');
-  const [count, setCount] = useState('2');
-  const [choice, setChoice] = useState('Grandeur');
-  const [user, setUser] = useState<any>(null);
-  const [allowed, setAllowed] = useState(false);
-  const [busy, setBusy] = useState(false);
-
-  const go = (p: Page) => {
-    setPage(p);
-    setMenu(false);
-    setNotice('');
-    location.hash = p;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const refresh = async () => {
-    if (!supabase) return;
-
-    const { data: rows, error } = await supabase
-      .from('apartments')
-      .select('*')
-      .order('sort_order');
-
-    if (error) throw error;
-
-    const { data: photos, error: photoError } = await supabase
-      .from('apartment_photos')
-      .select('*')
-      .order('sort_order');
-
-    if (photoError) throw photoError;
-
-    if (rows?.length) {
-      const loaded = rows.map((a: any) => ({
-        ...a,
-        title: a.id === 'block-1' ? 'Grandeur' : a.id === 'block-2' ? 'Prestige' : a.title,
-        photos: [
-          ...(defaults.find(d => d.id === a.id)?.photos || []),
-          ...(photos || []).filter((p: any) => p.apartment_id === a.id)
-        ].filter((p: any, i: number, arr: any[]) =>
-          arr.findIndex((x: any) => x.src === p.src) === i
-        )
-      }));
-
-      if (!loaded.some((a: any) => a.id === 'studio')) {
-        loaded.push(defaults[2]);
-      }
-
-      setApartments(loaded);
-    }
-  };
+  const [guestName, setGuestName] = useState('');
+  const [guestCount, setGuestCount] = useState('2');
+  const [stayChoice, setStayChoice] = useState('Block 1 Apartment');
+  const [apartments, setApartments] = useState<Apartment[]>(defaultApartments);
+  const [adminUser, setAdminUser] = useState<{ email?: string; name?: string } | null>(null);
+  const [adminAllowed, setAdminAllowed] = useState(false);
+  const [adminChecking, setAdminChecking] = useState(false);
+  const [savingPrices, setSavingPrices] = useState(false);
 
   useEffect(() => {
-    const listener = () => {
-      const p = location.hash.slice(1) as Page;
-      if (['home', 'about', 'apartments', 'contact', 'login'].includes(p)) {
-        setPage(p);
+    const onHash = () => {
+      const route = window.location.hash.replace('#', '') as Page;
+      if (['home', 'about', 'apartments', 'contact', 'login'].includes(route)) {
+        setPage(route);
       }
     };
 
-    addEventListener('hashchange', listener);
-
-    if (supabase) {
-      refresh().catch(() =>
-        setNotice('Showing the saved starting listings. Database setup may still be required.')
-      );
-
-      supabase.auth.getSession().then(({ data }) => {
-        const u = data.session?.user || null;
-        setUser(u);
-        setAllowed((u?.email || '').toLowerCase() === adminEmail);
-      });
-
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        const u = session?.user || null;
-        setUser(u);
-        setAllowed((u?.email || '').toLowerCase() === adminEmail);
-      });
-
-      return () => {
-        removeEventListener('hashchange', listener);
-        subscription.unsubscribe();
-      };
-    }
-
-    return () => removeEventListener('hashchange', listener);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const book = () => {
-    const a = apartments.find(x => x.title === choice) || apartments[0];
+  useEffect(() => {
+    let active = true;
 
-    const msg = `Hello BOUJEELUX, I would like to enquire about booking. Name: ${guest || 'Not provided'}. Apartment: ${a?.title || choice}. Number of guests: ${count}. Nightly rate: ${money(a?.nightly || 0)}. Please confirm dates and availability.`;
-
-    window.open(wa + '?text=' + encodeURIComponent(msg), '_blank', 'noopener,noreferrer');
-  };
-
-  const login = async () => {
-    if (!supabase) return;
-    setBusy(true);
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email: adminEmail,
-      options: { emailRedirectTo: location.origin }
+    api.get('/api/apartments').then(({ data }) => {
+      if (active) setApartments(mergeApartmentData(data?.apartments));
+    }).catch(() => {
+      if (active) {
+        setNotice('Showing the current apartment rates. Please refresh later if rates have recently changed.');
+      }
     });
 
-    setNotice(error ? error.message : 'A secure sign-in link has been sent to the authorised admin email.');
-    setBusy(false);
+    auth.getUser().then(async user => {
+      if (!active) return;
+
+      setAdminUser(user ? { email: user.email, name: user.name } : null);
+
+      if (user) {
+        setAdminChecking(true);
+
+        try {
+          const { data } = await api.get('/api/admin/apartments');
+
+          if (active) {
+            setAdminAllowed(true);
+            setApartments(mergeApartmentData(data?.apartments));
+          }
+        } catch {
+          if (active) setAdminAllowed(false);
+        } finally {
+          if (active) setAdminChecking(false);
+        }
+      }
+    }).catch(() => undefined);
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const go = (next: Page) => {
+    setPage(next);
+    setMenuOpen(false);
+    setNotice('');
+    window.location.hash = next;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const save = async () => {
-    if (!supabase || !allowed) return;
+  const bookMessage = () => {
+    const selected = apartments.find(item => item.title === stayChoice) ?? apartments[0];
 
-    setBusy(true);
+    const message = `Hello BOUJEELUX, I would like to enquire about booking. Name: ${guestName || 'Not provided'}. Apartment: ${selected?.title || stayChoice}. Number of guests: ${guestCount}. Nightly rate: ${selected ? money(selected.nightly) : 'Please confirm'}.`;
+
+    window.open(
+      whatsapp + '?text=' + encodeURIComponent(message),
+      '_blank',
+      'noopener,noreferrer'
+    );
+
+    setNotice('Your booking details are ready in WhatsApp. Please confirm dates and availability with our team.');
+  };
+
+  const signInAdmin = async () => {
     setNotice('');
 
     try {
-      for (let i = 0; i < apartments.length; i++) {
-        const a = apartments[i];
-
-        const { error } = await supabase.from('apartments').upsert({
-          id: a.id,
-          title: a.title,
-          detail: a.detail,
-          nightly: Number(a.nightly),
-          sort_order: i + 1
-        });
-
-        if (error) throw error;
-
-        const { error: delError } = await supabase
-          .from('apartment_photos')
-          .delete()
-          .eq('apartment_id', a.id);
-
-        if (delError) throw delError;
-
-        if (a.photos.length) {
-          const { error: insError } = await supabase
-            .from('apartment_photos')
-            .insert(
-              a.photos.map((p, j) => ({
-                apartment_id: a.id,
-                src: p.src,
-                label: p.label,
-                alt: p.alt,
-                sort_order: j + 1
-              }))
-            );
-
-          if (insError) throw insError;
-        }
-      }
-
-      await refresh();
-      setNotice('Apartment names, details, prices and photos saved.');
-    } catch (e: any) {
-      setNotice(e.message || 'Could not save. Check the database setup and admin access.');
-    } finally {
-      setBusy(false);
+      await auth.signInWithRedirect({ scope: 'openid email profile' });
+    } catch {
+      setNotice('Admin sign-in could not be opened. Please try again.');
     }
   };
 
-  const addPhoto = async (id: string, file: File) => {
-    if (!supabase || !allowed) return;
-
-    const ext = file.name.split('.').pop() || 'jpg';
-    const path = `${id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-    const { error } = await supabase.storage
-      .from('apartment-photos')
-      .upload(path, file, { upsert: false });
-
-    if (error) {
-      setNotice(error.message);
-      return;
-    }
-
-    const { data } = supabase.storage.from('apartment-photos').getPublicUrl(path);
-
-    setApartments(cur => cur.map(a => a.id === id ? {
-      ...a,
-      photos: [...a.photos, {
-        src: data.publicUrl,
-        label: file.name.replace(/\.[^.]+$/, ''),
-        alt: a.title + ' ' + file.name
-      }]
-    } : a));
-  };
-
-  const nav: [Page, string][] = [
+  const nav = [
     ['home', 'Home'],
     ['about', 'About Us'],
     ['apartments', 'Apartments'],
     ['contact', 'Contact Us'],
-    ['login', 'Admin Login']
-  ];
-
-  const allPhotos = apartments.flatMap(a => a.photos);
+    ['login', 'Admin Login'],
+  ] as const;
 
   return (
-    <div className={`shell page-${page}`}>
+    <div className="site-shell">
+
       <div className="topline">
-        YOUR COMFORT. YOUR SPACE. YOUR STAY.
+        <span>YOUR COMFORT. YOUR SPACE. YOUR STAY.</span>
         <span>Luxury serviced apartments</span>
       </div>
 
-      <header>
-        <button className="logo" onClick={() => go('home')}>
-          <img src="/resources/boujeelux-logo.png" alt="BOUJEE Luxury Apartments" />
+      <header className="header">
+        <button className="logo-button" onClick={() => go('home')} aria-label="BOUJEELUX home">
+          <img src={assets.logo} alt="BOUJEE Luxury Apartments" />
         </button>
 
-        <button className="hamb" onClick={() => setMenu(!menu)}>
-          {menu ? <X /> : <Menu />}
+        <button
+          className="menu-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle navigation"
+        >
+          {menuOpen ? <X /> : <Menu />}
         </button>
 
-        <nav className={menu ? 'open' : ''}>
-          {nav.map(([p, l]) =>
-            <button className={page === p ? 'active' : ''} key={p} onClick={() => go(p)}>
-              {l}
+        <nav className={menuOpen ? 'nav open' : 'nav'}>
+          {nav.map(([key, label]) => (
+            <button
+              key={key}
+              className={page === key ? 'nav-link active' : 'nav-link'}
+              onClick={() => go(key)}
+            >
+              {label}
             </button>
-          )}
-          <a href={wa} target="_blank" rel="noreferrer">
+          ))}
+
+          <a className="nav-book" href={whatsapp} target="_blank" rel="noreferrer">
             Book a stay <ArrowUpRight size={15} />
           </a>
         </nav>
       </header>
 
-      {page === 'home' && <main>
-        <section className="hero">
-          <img
-            className="hero-image"
-            src="/resources/block-1-living-room.jpg"
-            alt="BOUJEELUX luxury apartment living room"
-          />
-          <div className="shade" />
+      {page === 'home' && (
+        <main>
+          <section className="hero">
+            <img className="hero-image" src={assets.living1} alt="BOUJEELUX apartment living room" />
+            <div className="hero-overlay" />
 
-          <div className="heroText">
-            <small>THE BOUJEELUX EXPERIENCE</small>
-            <h1>Luxury. Comfort.<br />Privacy.</h1>
-            <p>Your perfect home away from home.</p>
-            <button className="gold" onClick={() => go('apartments')}>
-              Explore Apartments <ArrowRight size={17} />
-            </button>
-          </div>
+            <div className="hero-content">
+              <span className="eyebrow light">THE BOUJEELUX EXPERIENCE</span>
+              <h1>Luxury. Comfort. Privacy.</h1>
+              <p>Your perfect home away from home.</p>
 
-          <div className="stamp">
-            BOUJEE<br />
-            <b>LUX</b><br />
-            MADE SIMPLE
-          </div>
-        </section>
-
-        <section className="intro">
-          <div>
-            <small>THE BOUJEELUX EXPERIENCE</small>
-            <h2>More than a place to sleep.</h2>
-          </div>
-          <p>Choose from our three serviced apartment options: Grandeur, Prestige and our stylish Studio Apartment. Enjoy comfort, privacy and thoughtful hospitality.</p>
-        </section>
-
-        <section className="home-gallery">
-          <div className="gallery-heading">
-            <small>EXPLORE BOUJEELUX</small>
-            <h2>Spaces made for <em>living beautifully.</em></h2>
-            <p>A glimpse of the comfort, style and welcoming spaces waiting for you.</p>
-          </div>
-
-          <div className="home-gallery-grid">
-            {apartments.flatMap(a => a.photos.slice(0, 3)).slice(0, 8).map((p, i) =>
-              <figure className={i === 0 ? 'gallery-large' : ''} key={p.id || p.src + i}>
-                <img src={p.src} alt={p.alt} />
-                <figcaption>{p.label}</figcaption>
-              </figure>
-            )}
-          </div>
-        </section>
-
-        <section className="features">
-          <img src="/resources/block-1-bedroom.jpg" alt="Grandeur bedroom" />
-          <div>
-            <small>YOUR PRIVATE RETREAT</small>
-            <h2>Space to relax.<br /><em>Room to enjoy.</em></h2>
-            <p>From inviting bedrooms to welcoming lounges, explore the real spaces waiting for you at BOUJEELUX.</p>
-            <button onClick={() => go('apartments')}>
-              View our apartments <ArrowRight size={17} />
-            </button>
-          </div>
-          <img src="/resources/block-2-parlour.jpg" alt="Prestige parlour" />
-        </section>
-
-        <section className="home-experience">
-          <div className="gallery-heading">
-            <small>MORE TO LOOK FORWARD TO</small>
-            <h2>Entertainment & <em>recreation.</em></h2>
-            <p>More ways to relax, play and enjoy your time with us.</p>
-          </div>
-
-          <div className="coming-soon">
-            {entertainment.map((item, i) =>
-              <div className="coming-card" key={item}>
-                <div className="coming-icon">
-                  {i === 5 ? <Music /> : i === 6 || i === 7 ? <Trophy /> : i === 4 ? <Sparkles /> : i === 3 ? <Heart /> : <Gamepad2 />}
-                </div>
-                <h3>{item}</h3>
-                <span>COMING SOON</span>
+              <div className="hero-actions">
+                <button className="button button-gold" onClick={() => go('apartments')}>
+                  Explore Apartments <ArrowRight size={17} />
+                </button>
               </div>
-            )}
-          </div>
-        </section>
+            </div>
 
-        <section className="callout">
-          <h2>Find your kind<br />of <em>comfort.</em></h2>
-          <button onClick={() => go('apartments')}>
-            See apartments & rates <ArrowRight size={17} />
-          </button>
-        </section>
-      </main>}
+            <div className="hero-stamp">
+              <span>BOUJEE</span>
+              <strong>LUX</strong>
+              <span>MADE SIMPLE</span>
+            </div>
+          </section>
 
-      {page === 'about' && <main>
-        <section className="pagehead">
-          <small>A LITTLE ABOUT US</small>
-          <h1>Welcome to<br /><em>your happy place.</em></h1>
-          <p>Comfort-led serviced apartments for stays worth remembering.</p>
-        </section>
+          <section className="home-gallery" aria-label="BOUJEELUX apartment and outdoor spaces">
+            <div className="home-gallery-heading">
+              <span className="eyebrow">Boujee living, made simple</span>
+              <h2>Spaces to make yourself at home.</h2>
+            </div>
 
-        <section className="story">
-          <h2>Hospitality, with<br /><em>a personal touch.</em></h2>
-          <p>BOUJEELUX Luxury Apartments is built around a simple idea: a stay should feel welcoming from the moment you arrive. We offer thoughtfully presented apartment spaces where guests can unwind, spend time together and enjoy the freedom of a home away from home.</p>
-        </section>
+            <div className="home-gallery-grid">
+              <img src={assets.homePatio} alt="Private patio seating" />
+              <img src={assets.homeGrandeur} alt="Grandeur lounge" />
+              <img src={assets.homePrestige} alt="Prestige lounge" />
+              <img src={assets.homeGarden} alt="Garden patio" />
+              <img src={assets.homeOutdoor} alt="Outdoor seating" />
+              <img src={assets.homePrivate} alt="Private apartment lounge" />
+            </div>
 
-        <section className="about-gallery">
-          <div className="gallery-heading">
-            <small>INSIDE BOUJEELUX</small>
-            <h2>Comfort in every <em>detail.</em></h2>
-          </div>
-          <div className="about-gallery-grid">
-            {apartments.flatMap(a => a.photos.slice(3, 5)).slice(0, 6).map((p, i) =>
-              <figure key={p.id || p.src + i}>
-                <img src={p.src} alt={p.alt} />
-                <figcaption>{p.label}</figcaption>
-              </figure>
-            )}
-          </div>
-        </section>
-
-        <section className="values">
-          <div><Sparkles /><h3>Thoughtful comfort</h3><p>Spaces prepared to help you settle in and feel at ease.</p></div>
-          <div><ShieldCheck /><h3>Privacy & peace</h3><p>A welcoming setting for your own time and together time.</p></div>
-          <div><Heart /><h3>Warm hospitality</h3><p>Friendly support from enquiry through your stay.</p></div>
-        </section>
-      </main>}
-
-      {page === 'apartments' && <main>
-        <section className="pagehead">
-          <small>STAY YOUR WAY</small>
-          <h1>Our <em>apartments.</em></h1>
-          <p>Explore all three BOUJEELUX serviced apartments: Grandeur, Prestige and our Studio Apartment.</p>
-          <div className="discount">✨ Stay 7 nights or more and enjoy 10% off</div>
-        </section>
-
-        <section className="list">
-          {apartments.map(a => <article key={a.id}>
-            <div className="details">
-              <small>BOUJEELUX • {a.title.toUpperCase()}</small>
-              <h2>{a.title}</h2>
-              <p>{a.detail}</p>
-              <div className="price">{money(a.nightly)} {a.nightly > 0 && <small>/ night</small>}</div>
-              {a.nightly > 0 && <p>Weekly rate after 10% discount: <b>{money(Math.round(a.nightly * .9))} / night</b></p>}
-              <button onClick={() => { setChoice(a.title); go('contact'); }}>
-                Enquire about this apartment <ArrowRight size={16} />
+            <div className="home-gallery-cta">
+              <p>Boujee living, made simple.</p>
+              <button className="button button-dark" onClick={() => go('apartments')}>
+                Explore Apartments <ArrowRight size={17} />
               </button>
             </div>
+          </section>
 
-            <div className="photos">
-              {a.photos.map((p, j) => <figure className={j === 0 ? 'main' : ''} key={p.id || p.src + j}>
-                <img src={p.src} alt={p.alt} />
-                <figcaption>{p.label}</figcaption>
-              </figure>)}
+          <section className="coming-soon">
+            <span className="eyebrow">MORE WAYS TO ENJOY YOUR STAY</span>
+            <h2>Entertainment</h2>
+
+            <div className="coming-soon-list">
+              {['PS5', 'Snooker board', 'Table tennis games'].map(item => (
+                <span key={item}>
+                  {item}
+                  <small>Coming Soon</small>
+                </span>
+              ))}
             </div>
-          </article>)}
-        </section>
-      </main>}
+          </section>
+        </main>
+      )}
 
-      {page === 'contact' && <main>
-        <section className="pagehead">
-          <small>WE WOULD LOVE TO HEAR FROM YOU</small>
-          <h1>Let's plan your<br /><em>next stay.</em></h1>
-          <p>Ask about availability, apartment options, rates or anything you need before booking.</p>
-        </section>
+      {page === 'about' && (
+        <main>
+          <section className="page-hero about-hero">
+            <img src={assets.living2} alt="BOUJEELUX lounge" />
+            <div className="page-hero-shade" />
 
-        <section className="contact">
-          <div>
-            <a href={`mailto:${email}`}><Mail /> {email}</a>
-            <a href={wa} target="_blank" rel="noreferrer"><Phone /> WhatsApp enquiries</a>
-            <a href={tiktok} target="_blank" rel="noreferrer">♪ @boujeelux.service</a>
-            <a href={mapUrl} target="_blank" rel="noreferrer"><MapPin /> View our location</a>
-
-            <div className="bank">
-              <small>BANK TRANSFER DETAILS</small>
-              <h3>Boujeelux Apartment</h3>
-              Baobab Microfinance Bank<br />
-              Account number: <b>1002485658</b>
-              <p>Please confirm your reservation and payment instructions with our team before transferring.</p>
+            <div className="page-hero-copy">
+              <span className="eyebrow light">A LITTLE ABOUT US</span>
+              <h1>Welcome to<br /><em>your happy place.</em></h1>
+              <p>Comfort-led serviced apartments for stays worth remembering.</p>
             </div>
-          </div>
+          </section>
 
-          <div className="enquiry">
-            <small>SEND A BOOKING ENQUIRY</small>
-            <h2>Tell us about<br /><em>your stay.</em></h2>
-
-            <label>Your name
-              <input value={guest} onChange={e => setGuest(e.target.value)} placeholder="Full name" />
-            </label>
-
-            <label>Apartment
-              <select value={choice} onChange={e => setChoice(e.target.value)}>
-                {apartments.map(a => <option key={a.id}>{a.title}</option>)}
-              </select>
-            </label>
-
-            <label>Number of guests
-              <input type="number" min="1" max="30" value={count} onChange={e => setCount(e.target.value)} />
-            </label>
-
-            <button onClick={book}>Continue on WhatsApp <ArrowUpRight /></button>
-            <small>Your enquiry opens our official WhatsApp booking conversation.</small>
-          </div>
-        </section>
-
-        <section className="contact-gallery">
-          <div className="gallery-heading">
-            <small>YOUR BOUJEELUX STAY</small>
-            <h2>A little look at <em>your next stay.</em></h2>
-          </div>
-          <div className="contact-gallery-grid">
-            {apartments.flatMap(a => a.photos.slice(5, 6)).slice(0, 3).map((p, i) =>
-              <figure key={p.id || p.src + i}>
-                <img src={p.src} alt={p.alt} />
-              </figure>
-            )}
-          </div>
-        </section>
-      </main>}
-
-      {page === 'login' && <main className="admin">
-        <section className="pagehead">
-          <small>BOUJEELUX MANAGEMENT</small>
-          <h1>Apartment <em>admin.</em></h1>
-          <p>Only the authorised BOUJEELUX admin account can manage apartment listings and photos.</p>
-        </section>
-
-        <section className="adminbox">
-          {!supabaseReady && <p>Supabase settings are not configured yet. Add the project URL and publishable key before deploying.</p>}
-
-          {!user && <div>
-            <LockKeyhole />
-            <h2>Admin sign in</h2>
-            <p>A secure sign-in link will be sent to {adminEmail}.</p>
-            <button disabled={!supabase || busy} onClick={login}>
-              {busy ? 'Sending…' : 'Send admin sign-in link'}
-            </button>
-          </div>}
-
-          {user && !allowed && <p>This account is not authorised. Sign out and use the BOUJEELUX admin email.</p>}
-
-          {allowed && <>
-            <div className="adminTop">
-              <h2>Manage apartments & photos</h2>
-              <button className="plain" onClick={() => supabase?.auth.signOut()}>Sign out</button>
+          <section className="story-section">
+            <div className="story-heading">
+              <span className="eyebrow">OUR STORY</span>
+              <h2>Hospitality, with<br /><em>a personal touch.</em></h2>
             </div>
 
-            <p>Add or edit all three apartment listings, prices, photos and labels. Changes appear on the public Apartments page.</p>
+            <div className="story-text">
+              <p>
+                BOUJEELUX Luxury Apartments is built around a simple idea:
+                a stay should feel welcoming from the moment you arrive.
+                We offer thoughtfully presented apartment spaces where guests
+                can unwind, spend time together and enjoy the freedom of a home away from home.
+              </p>
 
-            {apartments.map(a => <div className="edit" key={a.id}>
-              <label>Apartment name
-                <input value={a.title} onChange={e => setApartments(cur => cur.map(x => x.id === a.id ? { ...x, title: e.target.value } : x))} />
+              <p>
+                Whether your visit is for a short getaway, a family occasion
+                or a longer stay, our aim is to make your experience comfortable,
+                convenient and memorable.
+              </p>
+
+              <a className="text-link" href={whatsapp} target="_blank" rel="noreferrer">
+                Talk to our team <ArrowUpRight size={16} />
+              </a>
+            </div>
+          </section>
+
+          <section className="about-gallery">
+            <img src={assets.corridor} alt="BOUJEELUX apartment corridor" />
+            <img src={assets.sitting} alt="BOUJEELUX apartment seating" />
+            <img src={assets.bedroom} alt="BOUJEELUX bedroom" />
+          </section>
+
+          <section className="values-row">
+            <div>
+              <Sparkles />
+              <h3>Thoughtful comfort</h3>
+              <p>Spaces prepared to help you settle in and feel at ease.</p>
+            </div>
+
+            <div>
+              <ShieldCheck />
+              <h3>Privacy & peace</h3>
+              <p>A welcoming setting for your own time and together time.</p>
+            </div>
+
+            <div>
+              <Heart />
+              <h3>Warm hospitality</h3>
+              <p>Friendly support from enquiry through your stay.</p>
+            </div>
+          </section>
+        </main>
+      )}
+
+      {page === 'apartments' && (
+        <main>
+          <section className="apartments-heading">
+            <span className="eyebrow">STAY YOUR WAY</span>
+            <h1>Our <em>apartments.</em></h1>
+            <p>Explore our available apartments. Each listing keeps all its room and facility photos together.</p>
+
+            <div className="discount-note">
+              <Sparkles size={18} />
+              <span>
+                <strong>Stay 7 nights or more and enjoy 10% off</strong>
+                <small>Weekly discount is calculated from the current nightly price.</small>
+              </span>
+            </div>
+          </section>
+
+          <section className="block-apartment-list">
+            {apartments.map((item, index) => (
+              <article className={'block-apartment-card block-' + (index + 1)} key={item.id}>
+                <div className="block-apartment-heading">
+                  <span className="eyebrow">BOUJEELUX • {item.title.toUpperCase()}</span>
+                  <h2>{item.title}</h2>
+                  <p>{item.detail}</p>
+
+                  <div className="rate">
+                    <strong>{item.nightly > 0 ? money(item.nightly) : 'Price on request'}</strong>
+                    {item.nightly > 0 && <span>/ night</span>}
+                  </div>
+
+                  {item.nightly > 0 && (
+                    <div className="weekly-rate">
+                      <span>Weekly rate after 10% discount</span>
+                      <strong>{money(Math.round(item.nightly * 0.9))} / night</strong>
+                    </div>
+                  )}
+
+                  <button
+                    className="button button-dark"
+                    onClick={() => {
+                      setStayChoice(item.title);
+                      go('contact');
+                    }}
+                  >
+                    Enquire about this apartment <ArrowRight size={16} />
+                  </button>
+                </div>
+
+                <div className="block-photo-grid">
+                  {item.photos.map((photo, photoIndex) => (
+                    <figure
+                      key={photo.src}
+                      className={photoIndex === 0 ? 'block-photo-main' : ''}
+                    >
+                      <img src={photo.src} alt={photo.alt} />
+                      <figcaption>{photo.label}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </section>
+
+          <section className="booking-banner">
+            <div>
+              <span className="eyebrow light">READY WHEN YOU ARE</span>
+              <h2>Your next stay<br /><em>starts here.</em></h2>
+            </div>
+
+            <a className="button button-cream" href={whatsapp} target="_blank" rel="noreferrer">
+              Ask about availability <ArrowUpRight size={17} />
+            </a>
+          </section>
+        </main>
+      )}
+
+      {page === 'contact' && (
+        <main>
+          <section className="contact-heading">
+            <span className="eyebrow">WE WOULD LOVE TO HEAR FROM YOU</span>
+            <h1>Let's plan your<br /><em>next stay.</em></h1>
+            <p>Ask about availability, apartment options, rates or anything you need before booking.</p>
+          </section>
+
+          <section className="contact-layout">
+            <div className="contact-details">
+
+              <a href={`mailto:${email}`} className="contact-card">
+                <span className="contact-icon"><Mail /></span>
+                <span>
+                  <small>EMAIL US</small>
+                  <strong>{email}</strong>
+                </span>
+                <ArrowUpRight />
+              </a>
+
+              <a href={`mailto:${bookingEmail}`} className="contact-card">
+                <span className="contact-icon"><Mail /></span>
+                <span>
+                  <small>BOOKING EMAIL</small>
+                  <strong>{bookingEmail}</strong>
+                </span>
+                <ArrowUpRight />
+              </a>
+
+              <a href={`tel:${phoneNumber}`} className="contact-card">
+                <span className="contact-icon"><Phone /></span>
+                <span>
+                  <small>CALL US</small>
+                  <strong>{phoneNumber}</strong>
+                </span>
+                <ArrowUpRight />
+              </a>
+
+              <a href={whatsapp} target="_blank" rel="noreferrer" className="contact-card">
+                <span className="contact-icon"><Phone /></span>
+                <span>
+                  <small>WHATSAPP BOOKINGS</small>
+                  <strong>Chat with BOUJEELUX</strong>
+                </span>
+                <ArrowUpRight />
+              </a>
+
+              <a href={tikTok} target="_blank" rel="noreferrer" className="contact-card">
+                <span className="contact-icon">
+                  <span className="tiktok-mark">♪</span>
+                </span>
+                <span>
+                  <small>FOLLOW OUR TIKTOK</small>
+                  <strong>@boujeelux.service</strong>
+                </span>
+                <ArrowUpRight />
+              </a>
+
+              <a href={mapUrl} target="_blank" rel="noreferrer" className="contact-card">
+                <span className="contact-icon"><MapPin /></span>
+                <span>
+                  <small>FIND OUR LOCATION</small>
+                  <strong>View BOUJEELUX on Google Maps</strong>
+                </span>
+                <ArrowUpRight />
+              </a>
+
+              <div className="bank-card">
+                <span className="eyebrow">BANK TRANSFER DETAILS</span>
+                <strong>Boujeelux Apartment</strong>
+                <p>Baobab Microfinance Bank</p>
+                <div>
+                  <span>Account number</span>
+                  <b>1002485658</b>
+                </div>
+                <small>
+                  Please confirm your reservation and payment instructions
+                  with our team before transferring.
+                </small>
+              </div>
+            </div>
+
+            <div className="enquiry-panel">
+              <span className="eyebrow">SEND A BOOKING ENQUIRY</span>
+              <h2>Tell us about<br /><em>your stay.</em></h2>
+
+              <label>
+                Your name
+                <input
+                  value={guestName}
+                  onChange={e => setGuestName(e.target.value)}
+                  placeholder="Full name"
+                />
               </label>
 
-              <label>Description
-                <input value={a.detail} onChange={e => setApartments(cur => cur.map(x => x.id === a.id ? { ...x, detail: e.target.value } : x))} />
+              <label>
+                Apartment
+                <select value={stayChoice} onChange={e => setStayChoice(e.target.value)}>
+                  {apartments.map(item => (
+                    <option key={item.id} value={item.title}>{item.title}</option>
+                  ))}
+                </select>
               </label>
 
-              <label>Nightly price (₦)
-                <input type="number" min="0" value={a.nightly} onChange={e => setApartments(cur => cur.map(x => x.id === a.id ? { ...x, nightly: Number(e.target.value) } : x))} />
+              <label>
+                Number of guests
+                <input
+                  type="number"
+                  min="1"
+                  max="30"
+                  required
+                  value={guestCount}
+                  onChange={e => setGuestCount(e.target.value)}
+                  placeholder="Enter number of guests"
+                />
               </label>
 
-              <strong>Photos and labels</strong>
+              <button className="button button-dark full" onClick={bookMessage}>
+                Continue on WhatsApp <ArrowUpRight size={17} />
+              </button>
 
-              {a.photos.map((p, j) => <div className="photoEdit" key={p.id || p.src + j}>
-                <img src={p.src} alt={p.label} />
-                <input value={p.label} aria-label="Photo label" onChange={e => setApartments(cur => cur.map(x => x.id === a.id ? { ...x, photos: x.photos.map((z, k) => k === j ? { ...z, label: e.target.value, alt: a.title + ' ' + e.target.value } : z) } : x))} />
-                <button className="plain" onClick={() => setApartments(cur => cur.map(x => x.id === a.id ? { ...x, photos: x.photos.filter((_, k) => k !== j) } : x))}>
-                  <Trash2 size={16} /> Remove
+              {notice && <p className="notice">{notice}</p>}
+
+              <small className="form-note">
+                Your enquiry opens our official WhatsApp booking conversation.
+              </small>
+            </div>
+          </section>
+        </main>
+      )}
+
+      {page === 'login' && (
+        <main className="admin-page">
+          <section className="admin-intro">
+            <span className="eyebrow">BOUJEELUX MANAGEMENT</span>
+            <h1>Apartment <em>admin.</em></h1>
+            <p>Sign in with the authorised BOUJEELUX admin email to manage apartment listings and prices.</p>
+          </section>
+
+          <section className="admin-panel">
+            {!adminUser && (
+              <div className="admin-signin">
+                <LockKeyhole size={28} />
+                <h2>Admin sign in</h2>
+                <p>Use the BOUJEELUX admin email. A secure sign-in link will be sent to that address.</p>
+                <button className="button button-dark" onClick={signInAdmin}>
+                  Continue with admin email <ArrowUpRight size={16} />
                 </button>
-              </div>)}
+              </div>
+            )}
 
-              <label className="upload">
-                <Upload size={16} /> Upload photo
-                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => {
-                  const f = e.target.files?.[0];
-                  if (f) addPhoto(a.id, f);
-                  e.currentTarget.value = '';
-                }} />
-              </label>
-            </div>)}
+            {adminUser && !adminAllowed && (
+              <div className="admin-signin">
+                <ShieldCheck size={28} />
+                <h2>Checking admin access</h2>
+                <p>
+                  {adminChecking
+                    ? 'Verifying your account permissions…'
+                    : 'This account is not on the BOUJEELUX admin list. Sign in with the authorised admin email.'}
+                </p>
+                <button className="button button-dark" onClick={signInAdmin}>
+                  Try another account
+                </button>
+              </div>
+            )}
 
-            <button onClick={() => setApartments(cur => [...cur, {
-              id: 'apt-' + Date.now(),
-              title: 'New Apartment',
-              detail: 'Add apartment details',
-              nightly: 1,
-              photos: []
-            }])}>
-              <Plus size={16} /> Add apartment
-            </button>
+            {adminAllowed && (
+              <div className="admin-editor">
+                <div className="admin-editor-top">
+                  <div>
+                    <span className="eyebrow">
+                      SIGNED IN AS {adminUser.email?.toUpperCase()}
+                    </span>
+                    <h2>Manage apartments & photos</h2>
+                  </div>
 
-            <button disabled={busy} onClick={save}>
-              {busy ? 'Saving…' : 'Save all apartment changes'}
-            </button>
-          </>}
+                  <button
+                    className="admin-signout"
+                    onClick={async () => {
+                      await auth.signOut();
+                      setAdminUser(null);
+                      setAdminAllowed(false);
+                    }}
+                  >
+                    Sign out
+                  </button>
+                </div>
 
-        </section>
+                <p>
+                  Add or edit apartment listings, nightly prices, photo uploads
+                  and the label shown under each photo.
+                  Changes appear on the public Apartments page.
+                </p>
 
-        {notice && <p className="notice">{notice}</p>}
-      </main>}
+                {apartments.map(item => (
+                  <div className="admin-apartment" key={item.id}>
+                    <label>
+                      Apartment name
+                      <input
+                        value={item.title}
+                        onChange={e => setApartments(current =>
+                          current.map(entry =>
+                            entry.id === item.id
+                              ? { ...entry, title: e.target.value }
+                              : entry
+                          )
+                        )}
+                      />
+                    </label>
 
-      <footer>
-        <div>
-          <img src="/resources/boujeelux-logo.png" alt="BOUJEELUX logo" />
-          <p>Luxury serviced apartments for comfort, connection and memorable stays.</p>
+                    <label>
+                      Description
+                      <input
+                        value={item.detail}
+                        onChange={e => setApartments(current =>
+                          current.map(entry =>
+                            entry.id === item.id
+                              ? { ...entry, detail: e.target.value }
+                              : entry
+                          )
+                        )}
+                      />
+                    </label>
+
+                    <label>
+                      Nightly price (₦) — enter 0 for price on request
+                      <input
+                        type="number"
+                        min="0"
+                        value={item.nightly}
+                        onChange={e => setApartments(current =>
+                          current.map(entry =>
+                            entry.id === item.id
+                              ? { ...entry, nightly: Number(e.target.value) }
+                              : entry
+                          )
+                        )}
+                      />
+                    </label>
+
+                    <div className="admin-photo-list">
+                      <strong>Photos and labels</strong>
+
+                      {item.photos.map((photo, idx) => (
+                        <div className="admin-photo-row" key={photo.src + idx}>
+                          <img src={photo.src} alt={photo.label} />
+
+                          <input
+                            aria-label="Photo label"
+                            value={photo.label}
+                            onChange={e => setApartments(current =>
+                              current.map(entry =>
+                                entry.id === item.id
+                                  ? {
+                                      ...entry,
+                                      photos: entry.photos.map((p, i) =>
+                                        i === idx
+                                          ? {
+                                              ...p,
+                                              label: e.target.value,
+                                              alt: item.title + ' ' + e.target.value,
+                                            }
+                                          : p
+                                      ),
+                                    }
+                                  : entry
+                              )
+                            )}
+                          />
+
+                          <button
+                            type="button"
+                            className="admin-signout"
+                            onClick={() => setApartments(current =>
+                              current.map(entry =>
+                                entry.id === item.id
+                                  ? {
+                                      ...entry,
+                                      photos: entry.photos.filter((_, i) => i !== idx),
+                                    }
+                                  : entry
+                              )
+                            )}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <label className="admin-upload">
+                      Upload photo
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        onChange={async e => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+
+                          const reader = new FileReader();
+
+                          reader.onload = async () => {
+                            const data = String(reader.result).split(',')[1];
+
+                            try {
+                              const { data: uploaded } = await api.post('/api/admin/upload', {
+                                fileName: file.name,
+                                content: data,
+                                contentType: file.type,
+                              });
+
+                              setApartments(current =>
+                                current.map(entry =>
+                                  entry.id === item.id
+                                    ? {
+                                        ...entry,
+                                        photos: [
+                                          ...entry.photos,
+                                          {
+                                            src: uploaded.url,
+                                            label: file.name.replace(/\.[^.]+$/, ''),
+                                            alt: item.title + ' ' + file.name,
+                                          },
+                                        ],
+                                      }
+                                    : entry
+                                )
+                              );
+
+                              setNotice('Photo uploaded. Add a clear label, then save apartment changes.');
+                            } catch {
+                              setNotice('Photo upload failed. Please try a smaller JPG or PNG image.');
+                            }
+                          };
+
+                          reader.readAsDataURL(file);
+                          e.target.value = '';
+                        }}
+                      />
+                    </label>
+                  </div>
+                ))}
+
+                <button
+                  className="button button-dark"
+                  onClick={() => setApartments(current => [
+                    ...current,
+                    {
+                      id: 'apt-' + Date.now(),
+                      title: 'New Apartment',
+                      detail: 'Add apartment details',
+                      nightly: 0,
+                      photos: [],
+                    },
+                  ])}
+                >
+                  Add apartment
+                </button>
+
+                <button
+                  className="button button-dark"
+                  onClick={async () => {
+                    setSavingPrices(true);
+
+                    try {
+                      const { data } = await api.put('/api/admin/apartments', {
+                        items: apartments,
+                      });
+
+                      setApartments(mergeApartmentData(data.apartments));
+                      setNotice('Apartment listings, prices and photo labels saved.');
+                    } catch {
+                      setNotice('Could not save changes. Check each apartment has a name and valid price.');
+                    } finally {
+                      setSavingPrices(false);
+                    }
+                  }}
+                  disabled={savingPrices}
+                >
+                  {savingPrices ? 'Saving…' : 'Save all apartment changes'}
+                </button>
+              </div>
+            )}
+
+            {notice && <p className="notice">{notice}</p>}
+          </section>
+        </main>
+      )}
+
+      <footer className="footer">
+        <div className="footer-main">
+          <div className="footer-brand">
+            <img src={assets.logo} alt="BOUJEELUX Luxury Apartments" />
+            <p>Boujee living, made simple.</p>
+          </div>
+
+          <div>
+            <span className="footer-title">EXPLORE</span>
+            {nav.map(([key, label]) => (
+              <button key={key} onClick={() => go(key)}>{label}</button>
+            ))}
+          </div>
+
+          <div>
+            <span className="footer-title">GET IN TOUCH</span>
+            <a href={`mailto:${email}`}>{email}</a>
+            <a href={`mailto:${bookingEmail}`}>{bookingEmail}</a>
+            <a href={`tel:${phoneNumber}`}>{phoneNumber}</a>
+            <a href={whatsapp} target="_blank" rel="noreferrer">WhatsApp bookings</a>
+            <a href={mapUrl} target="_blank" rel="noreferrer">Our location</a>
+            <a href={tikTok} target="_blank" rel="noreferrer">@boujeelux.service</a>
+          </div>
         </div>
 
-        <div>
-          <b>EXPLORE</b>
-          {nav.map(([p, l]) => <button key={p} onClick={() => go(p)}>{l}</button>)}
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} BOUJEELUX Luxury Apartments</span>
+          <span>Boujee living, made simple.</span>
         </div>
-
-        <div>
-          <b>GET IN TOUCH</b>
-          <a href={`mailto:${email}`}>{email}</a>
-          <a href={wa}>WhatsApp bookings</a>
-          <a href={mapUrl}>Our location</a>
-          <a href={tiktok}>@boujeelux.service</a>
-        </div>
-
-        <small>© {new Date().getFullYear()} BOUJEELUX Luxury Apartments</small>
       </footer>
     </div>
   );
 }
 
 export default App;
+
+                  
