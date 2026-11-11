@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import {
   ArrowRight, ArrowUpRight, Menu, X, Mail, Phone, MapPin,
@@ -10,12 +9,14 @@ import { supabase, supabaseReady, adminEmail, type Apartment } from './supabase'
 const wa = 'https://wa.me/message/B5ZSNSGTP46UP1';
 const whatsappNumber = 'https://wa.me/2349119791995';
 const phoneNumber = '09119791995';
+
 const mapUrl = 'https://maps.app.goo.gl/tFdX3pNfdJoAuCaa6?g_st=iw';
 const tiktok = 'https://www.tiktok.com/@boujeelux.service?_r=1&_t=ZS-9Avy5JcdRyB';
 
 const email = 'Boujeelux24@gmail.com';
 const bookingEmail = 'Boujeeluxserviceapartment@gmail.com';
-const motto = 'Boujee Living, Made Simple.';
+
+const motto = 'Boujee Living Made Simple.';
 
 const defaults: Apartment[] = [
   {
