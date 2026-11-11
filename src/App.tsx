@@ -342,7 +342,7 @@ function App() {
 
           <div className="stamp">
             BOUJEE<br />
-            <b>LUX</b><br />
+            <b>LIVING</b><br />
             MADE SIMPLE
           </div>
         </section>
