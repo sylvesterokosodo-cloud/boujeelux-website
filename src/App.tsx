@@ -9,8 +9,6 @@ import {
   MapPin,
   Mail,
   Phone,
-  Users,
-  BedDouble,
   ShieldCheck,
   LockKeyhole,
   Sparkles,
@@ -38,15 +36,22 @@ const assets = {
   homePrivate: '/resources/home-private-lounge.jpg',
 };
 
+// Existing WhatsApp booking link
 const whatsapp = 'https://wa.me/message/B5ZSNSGTP46UPI1';
+
+// Additional WhatsApp booking number
+const phoneNumber = '09119791995';
+const whatsappSecond = 'https://wa.me/2349119791995';
+
 const mapUrl = 'https://maps.app.goo.gl/tFdX3pNfdJoAuCaa6?g_st=iw';
 
 const email = 'Boujeelux24@gmail.com';
 const bookingEmail = 'Boujeeluxserviceapartment@gmail.com';
-const phoneNumber = '09119791995';
 
 const tikTok =
   'https://www.tiktok.com/@boujeelux.service?_r=1&_t=ZS-9Avy5JcdRyB';
+
+const motto = 'Boujee Living, Made Simple.';
 
 type ApartmentPhoto = {
   src: string;
@@ -219,11 +224,10 @@ function App() {
   });
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [loginEmail, setLoginEmail] = useState('');
   const [notice, setNotice] = useState('');
   const [guestName, setGuestName] = useState('');
   const [guestCount, setGuestCount] = useState('2');
-  const [stayChoice, setStayChoice] = useState('Block 1 Apartment');
+  const [stayChoice, setStayChoice] = useState('Grandeur Apartment');
   const [apartments, setApartments] =
     useState<Apartment[]>(defaultApartments);
   const [adminUser, setAdminUser] = useState<{
@@ -345,29 +349,6 @@ function App() {
     }
   };
 
-  const savePrices = async () => {
-    setSavingPrices(true);
-    setNotice('');
-
-    try {
-      const { data } = await api.put('/api/admin/apartments', {
-        items: apartments.map((item) => ({
-          id: item.id,
-          nightly: item.nightly,
-        })),
-      });
-
-      setApartments(mergeApartmentData(data?.apartments));
-      setNotice('Apartment prices saved successfully.');
-    } catch {
-      setNotice(
-        'Prices could not be saved. Please confirm you are signed in with the authorised admin email.',
-      );
-    } finally {
-      setSavingPrices(false);
-    }
-  };
-
   const nav = [
     ['home', 'Home'],
     ['about', 'About Us'],
@@ -466,9 +447,7 @@ function App() {
             aria-label="BOUJEELUX apartment and outdoor spaces"
           >
             <div className="home-gallery-heading">
-              <span className="eyebrow">
-                BOUJEE LIVING, MADE SIMPLE
-              </span>
+              <span className="eyebrow">{motto}</span>
 
               <h2>Spaces to make yourself at home.</h2>
             </div>
@@ -592,6 +571,8 @@ function App() {
               >
                 Talk to our team <ArrowUpRight size={16} />
               </a>
+
+              <p className="brand-motto">{motto}</p>
             </div>
           </section>
 
@@ -839,8 +820,26 @@ function App() {
                 </span>
 
                 <span>
-                  <small>WHATSAPP ENQUIRIES</small>
+                  <small>WHATSAPP BOOKING LINE 1</small>
                   <strong>Chat with BOUJEELUX</strong>
+                </span>
+
+                <ArrowUpRight />
+              </a>
+
+              <a
+                href={whatsappSecond}
+                target="_blank"
+                rel="noreferrer"
+                className="contact-card"
+              >
+                <span className="contact-icon">
+                  <Phone />
+                </span>
+
+                <span>
+                  <small>WHATSAPP BOOKING LINE 2</small>
+                  <strong>{phoneNumber}</strong>
                 </span>
 
                 <ArrowUpRight />
@@ -960,11 +959,20 @@ function App() {
                 Continue on WhatsApp <ArrowUpRight size={17} />
               </button>
 
+              <a
+                className="button button-gold full"
+                href={whatsappSecond}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Book via {phoneNumber} <ArrowUpRight size={17} />
+              </a>
+
               {notice && <p className="notice">{notice}</p>}
 
               <small className="form-note">
-                Your enquiry opens our official WhatsApp booking
-                conversation.
+                You can contact either of our official WhatsApp
+                booking lines.
               </small>
             </div>
           </section>
@@ -1310,7 +1318,7 @@ function App() {
               alt="BOUJEELUX Luxury Apartments"
             />
 
-            <p>Boujee living, made simple.</p>
+            <p>{motto}</p>
           </div>
 
           <div>
@@ -1337,7 +1345,15 @@ function App() {
               target="_blank"
               rel="noreferrer"
             >
-              WhatsApp bookings
+              WhatsApp bookings — Line 1
+            </a>
+
+            <a
+              href={whatsappSecond}
+              target="_blank"
+              rel="noreferrer"
+            >
+              WhatsApp bookings — {phoneNumber}
             </a>
 
             <a
@@ -1363,7 +1379,7 @@ function App() {
             © {new Date().getFullYear()} BOUJEELUX Luxury Apartments
           </span>
 
-          <span>Boujee living, made simple.</span>
+          <span>{motto}</span>
         </div>
       </footer>
     </div>
