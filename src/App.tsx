@@ -7,7 +7,7 @@ import {
 import { supabase, supabaseReady, adminEmail, type Apartment } from './supabase';
 
 const wa = 'https://wa.me/message/B5ZSNSGTP46UP1';
-const whatsappNumber = 'https://wa.me/2349119791995';
+const whatsappNumber = 'https://wa.me/2349118781995';
 const phoneNumber = '09118781995';
 
 const mapUrl = 'https://maps.app.goo.gl/tFdX3pNfdJoAuCaa6?g_st=iw';
@@ -59,7 +59,7 @@ const defaults: Apartment[] = [
     id: 'studio',
     title: 'Studio Apartment',
     detail: 'A stylish, fully furnished studio apartment featuring a comfortable sleeping area, fitted kitchen, entertainment space and modern bathroom.',
-    nightly: 0,
+    nightly: 75000,
     sort_order: 3,
     photos: [
       { src: '/resources/IMG-20261027-WA0557(1).jpg', label: 'Studio Apartment', alt: 'Studio apartment with sleeping area and fitted kitchen' },
