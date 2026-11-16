@@ -37,8 +37,8 @@ const defaults: Apartment[] = [
       { src: '/resources/IMG-20261028-WA0045(1).jpg', label: 'Grandeur Bedroom Lounge', alt: 'Grandeur bedroom and lounge' },
       { src: '/resources/IMG-20261028-WA0049(1).jpg', label: 'Grandeur Bedroom', alt: 'Grandeur bedroom' },
       { src: '/resources/IMG-20261028-WA0053.jpg', label: 'Grandeur Bedroom with TV', alt: 'Grandeur bedroom with television' },
-      { src: '/resources/IMG-20261028-WA0057(2).jpg', label: 'Grandeur Outdoor Area', alt: 'Grandeur bedroom from another angle' },
-      { src: '/resources/IMG-20261028-WA0058(1).jpg', label: 'Grandeur Bedroom View', alt: 'Grandeur outdoor relaxation area' }
+      { src: '/resources/IMG-20261028-WA0057(2).jpg', label: 'Grandeur Outdoor Area', alt: 'Grandeur outdoor entertainment area' },
+      { src: '/resources/IMG-20261028-WA0058(1).jpg', label: 'Grandeur Bedroom View', alt: 'Grandeur bedroom from another anglea' }
     ]
   },
   {
