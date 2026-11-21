@@ -52,7 +52,7 @@ const defaults: Apartment[] = [
       { src: '/resources/block-2-bedroom-parlour.jpg', label: 'Bedroom & Parlour', alt: 'Prestige bedroom and parlour' },
       { src: '/resources/block-2-parlour.jpg', label: 'Parlour', alt: 'Prestige parlour' },
       { src: '/resources/block-2-bathroom.jpg', label: 'Bathroom', alt: 'Prestige bathroom' },
-      { src: '/resources/block-2-outdoor.jpg', label: 'Outdoor Area', alt: 'Prestige outdoor area' }
+      { src: '/resources/block-2-outdoor.jpg', label: 'Sitting room', alt: 'Prestige sitting area' }
     ]
   },
   {
@@ -64,10 +64,10 @@ const defaults: Apartment[] = [
     photos: [
       { src: '/resources/IMG-20261027-WA0557(1).jpg', label: 'Studio Apartment', alt: 'Studio apartment with sleeping area and fitted kitchen' },
       { src: '/resources/IMG-20261027-WA0558(1).jpg', label: 'Studio Kitchen', alt: 'Studio fitted kitchen' },
-      { src: '/resources/IMG-20261027-WA0559(1).jpg', label: 'Studio Bedroom & Entertainment', alt: 'Studio bedroom and television area' },
-      { src: '/resources/IMG-20261027-WA0560(1).jpg', label: 'Studio Shower', alt: 'Studio bathroom shower and sink' },
+      { src: '/resources/IMG-20261027-WA0559(1).jpg', label: 'Studio Shower', alt: 'Studio Shower' },
+      { src: '/resources/IMG-20261027-WA0560(1).jpg', label: 'Studio Room', alt: 'Studio room' },
       { src: '/resources/IMG-20261027-WA0561(1).jpg', label: 'Studio Bathroom', alt: 'Studio bathroom interior' },
-      { src: '/resources/IMG-20261027-WA0562(1).jpg', label: 'Studio Toilet & Shower', alt: 'Studio toilet and shower area' }
+      { src: '/resources/IMG-20261027-WA0562(1).jpg', label: 'Studio Bedroom And Entertainment', alt: 'Studio bedroom and entertainment' }
     ]
   }
 ];
