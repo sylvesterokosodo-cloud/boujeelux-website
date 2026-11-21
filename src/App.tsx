@@ -53,7 +53,6 @@ const defaults: Apartment[] = [
       { src: '/resources/block-2-bedroom-parlour.jpg', label: 'Prestige Bedroom & Parlour', alt: 'Prestige bedroom and parlour' },
       { src: '/resources/block-2-parlour.jpg', label: 'Prestige Parlour', alt: 'Prestige parlour' },
       { src: '/resources/block-2-bathroom.jpg', label: 'Prestige Bathroom', alt: 'Prestige bathroom' },
-      { src: '/resources/block-2-outdoor.jpg', label: 'Prestige Outdoor Area', alt: 'Prestige outdoor area' }
     ]
   },
   {
