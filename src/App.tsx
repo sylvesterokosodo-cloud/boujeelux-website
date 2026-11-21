@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import {
   ArrowRight, ArrowUpRight, Menu, X, Mail, Phone, MapPin,
@@ -27,9 +26,9 @@ const defaults: Apartment[] = [
     nightly: 150000,
     sort_order: 1,
     photos: [
-      { src: '/resources/block-1-bedroom.jpg', label: 'Grandeur Bedroom', alt: 'Grandeur bedroom' },
-      { src: '/resources/block-1-living-room.jpg', label: 'Grandeur Living Room', alt: 'Grandeur living room' },
-      { src: '/resources/block-1-sitting-room.jpg', label: 'Grandeur Sitting Area', alt: 'Grandeur sitting area' },
+      { src: '/resources/block-1-bedroom.jpg', label: 'Bedroom', alt: 'Grandeur bedroom' },
+      { src: '/resources/block-1-living-room.jpg', label: 'Living Room', alt: 'Grandeur living room' },
+      { src: '/resources/block-1-sitting-room.jpg', label: 'Sitting Area', alt: 'Grandeur sitting area' },
       { src: '/resources/IMG-20261028-WA0032(1).jpg', label: 'Grandeur Bathroom', alt: 'Grandeur bathroom and shower' },
       { src: '/resources/IMG-20261028-WA0036(2).jpg', label: 'Grandeur Lounge', alt: 'Grandeur lounge seating area' },
       { src: '/resources/IMG-20261028-WA0037(2).jpg', label: 'Grandeur Living Room', alt: 'Grandeur main living room' },
@@ -38,8 +37,8 @@ const defaults: Apartment[] = [
       { src: '/resources/IMG-20261028-WA0045(1).jpg', label: 'Grandeur Bedroom Lounge', alt: 'Grandeur bedroom and lounge' },
       { src: '/resources/IMG-20261028-WA0049(1).jpg', label: 'Grandeur Bedroom', alt: 'Grandeur bedroom' },
       { src: '/resources/IMG-20261028-WA0053.jpg', label: 'Grandeur Bedroom with TV', alt: 'Grandeur bedroom with television' },
-      { src: '/resources/IMG-20261028-WA0057(2).jpg', label: 'Grandeur Bedroom & TV', alt: 'Grandeur bedroom with television and entertainment area' },
-      { src: '/resources/IMG-20261028-WA0058(1).jpg', label: 'Grandeur bedroom view', alt: 'Grandeur bedroom view' }
+      { src: '/resources/IMG-20261028-WA0057(2).jpg', label: 'Grandeur outdoor area', alt: 'Grandeur outdoor relaxation area' },
+      { src: '/resources/IMG-20261028-WA0058(1).jpg', label: 'Grandeur Bedroom view', alt: 'Grandeur bedroom from another angle' }
     ]
   },
   {
@@ -49,10 +48,11 @@ const defaults: Apartment[] = [
     nightly: 230000,
     sort_order: 2,
     photos: [
-      { src: '/resources/block-2-bedroom.jpg', label: 'Prestige Bedroom', alt: 'Prestige bedroom' },
-      { src: '/resources/block-2-bedroom-parlour.jpg', label: 'Prestige Bedroom & Parlour', alt: 'Prestige bedroom and parlour' },
-      { src: '/resources/block-2-parlour.jpg', label: 'Prestige Parlour', alt: 'Prestige parlour' },
-      { src: '/resources/block-2-bathroom.jpg', label: 'Prestige Bathroom', alt: 'Prestige bathroom' },
+      { src: '/resources/block-2-bedroom.jpg', label: 'Bedroom', alt: 'Prestige bedroom' },
+      { src: '/resources/block-2-bedroom-parlour.jpg', label: 'Bedroom & Parlour', alt: 'Prestige bedroom and parlour' },
+      { src: '/resources/block-2-parlour.jpg', label: 'Parlour', alt: 'Prestige parlour' },
+      { src: '/resources/block-2-bathroom.jpg', label: 'Bathroom', alt: 'Prestige bathroom' },
+      { src: '/resources/block-2-outdoor.jpg', label: 'Outdoor Area', alt: 'Prestige outdoor area' }
     ]
   },
   {
@@ -64,15 +64,18 @@ const defaults: Apartment[] = [
     photos: [
       { src: '/resources/IMG-20261027-WA0557(1).jpg', label: 'Studio Apartment', alt: 'Studio apartment with sleeping area and fitted kitchen' },
       { src: '/resources/IMG-20261027-WA0558(1).jpg', label: 'Studio Kitchen', alt: 'Studio fitted kitchen' },
-      { src: '/resources/IMG-20261027-WA0559(1).jpg', label: 'Studio Bedroom & Sitting Area', alt: 'Studio bedroom and sitting area' },
-      { src: '/resources/IMG-20261027-WA0560(1).jpg', label: 'Studio Shower & Vanity', alt: 'Studio bathroom shower and vanity' },
-      { src: '/resources/IMG-20261027-WA0561(1).jpg', label: 'Studio Toilet', alt: 'Studio toilet area' },
-      { src: '/resources/IMG-20261027-WA0562(1).jpg', label: 'Studio Bedroom & Entertainment', alt: 'Studio bedroom with television and entertainment area' }
+      { src: '/resources/IMG-20261027-WA0559(1).jpg', label: 'Studio Bedroom & Entertainment', alt: 'Studio bedroom and television area' },
+      { src: '/resources/IMG-20261027-WA0560(1).jpg', label: 'Studio Shower', alt: 'Studio bathroom shower and sink' },
+      { src: '/resources/IMG-20261027-WA0561(1).jpg', label: 'Studio Bathroom', alt: 'Studio bathroom interior' },
+      { src: '/resources/IMG-20261027-WA0562(1).jpg', label: 'Studio Toilet & Shower', alt: 'Studio toilet and shower area' }
     ]
   }
 ];
 
 type Page = 'home' | 'about' | 'apartments' | 'contact' | 'login';
+
+const money = (n: number) =>
+  n > 0 ? '₦' + Number(n).toLocaleString('en-NG') : 'Price on request';
 
 const entertainment = [
   'PS5',
